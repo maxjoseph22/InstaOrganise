@@ -1,0 +1,40 @@
+body {
+    font-size: 18px;
+}
+
+.form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #FAF9F6;
+}
+
+.listing-wrapper {
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+}
+
+.form-title {
+    font-weight: bold;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+    color: #333;
+}
+
+.listing-form {
+    width: 100%;
+    padding: 30px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary-1 {
+    width: 100%;
+    padding: 10px;
+    background-color: #0d6efd;
+    color: white;
+} 
