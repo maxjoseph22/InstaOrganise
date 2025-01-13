@@ -18,6 +18,30 @@ client = OpenAI(api_key=api_key)
 connection = DatabaseConnection()
 connection.connect()
 
+def is_valid_dog_entry(dog_data):
+    required_fields = {
+        "Name": str,
+        "Breed": str,
+        "Purebreed": bool,
+        "Mix": bool,
+        "Sex": str,
+        "Location": str,
+        "Personality": str,
+        "Likes": (int, float),
+        "Comments": (int, float),
+        "Link_to_post": str
+    }
+    
+    for field, expected_type in required_fields.items():
+        value = dog_data.get(field)
+        # Check if value is None, "None", empty string, or not of expected type
+        if value is None or value == "None" or value == "" or not isinstance(value, expected_type):
+            return False, field
+        if "Age" in dog_data and dog_data["Age"] is not None:
+            if not isinstance(dog_data["Age"], (int, float)):
+                return False, "Age (invalid type)"
+    return True, None
+
 def extract_and_save_dog_data(description):
     dog_repository = DogRepository(connection)
     print("Welcome to The Dogist!\nWhat would you like to do? \n1 - Add a new dog \n2 - View rankings by breed \n3 - Viewing rankings by name \n4 - Search by breed \n5 - Search by name \n6 - Import dogs by CSV file")
@@ -123,6 +147,7 @@ def extract_and_save_dog_data(description):
 
                     Rules:
                     - Return ONLY the JSON object with no decorators or markdown
+                    - Output "Breed" as "Mix" if no other breed is mentioned in the description
                     - Purebreed is true if words 'mix' or 'mixed' are absent
                     - Mix is the inverse value of Purebreed
                     - All boolean values must be lowercase (true/false)
@@ -166,21 +191,30 @@ def extract_and_save_dog_data(description):
                             link_to_post = dog["Link_to_post"]
                             photo = dog["Photo"]
 
-                            print(f"Name: {name}")
-                            print(f"Breed: {breed}")
-                            print(f"Age: {age} years old")
-                            print(f"Purebreed: {purebreed}")
-                            print(f"Mix: {mix}")
-                            print(f"Sex: {sex}")
-                            print(f"Hometown: {location}")
-                            print(f"Personality / quirks: {personality}")
-                            print(f"{likes} likes")
-                            print(f"{comments} comments")
-                            print(link_to_post)
+                            is_valid, missing_field = is_valid_dog_entry(dog)
 
-                            dog_repository.create(Dog(None, name, breed, age, purebreed, mix, sex, location, personality, likes, comments, link_to_post, photo))
-                            print(f"{Fore.GREEN}New dog added successfully!{Style.RESET_ALL}")
-            
+                            if is_valid:
+                                print(f"Name: {name}")
+                                print(f"Breed: {breed}")
+                                print(f"Age: {age} years old")
+                                print(f"Purebreed: {purebreed}")
+                                print(f"Mix: {mix}")
+                                print(f"Sex: {sex}")
+                                print(f"Hometown: {location}")
+                                print(f"Personality / quirks: {personality}")
+                                print(f"{likes} likes")
+                                print(f"{comments} comments")
+                                print(link_to_post)
+
+                                dog_repository.create(Dog(None, name, breed, age, purebreed, mix, sex, location, personality, likes, comments, link_to_post, photo))
+                                print(f"{Fore.GREEN}New dog added successfully!{Style.RESET_ALL}")
+
+                            else:
+                                print(f"{Fore.RED}Invalid dog entry in row {idx}. Missing or invalid {missing_field}{Style.RESET_ALL}")
+                                with open('invalid_entries.csv', 'a', newline='') as file:
+                                    writer = csv.writer(file)
+                                    writer.writerow([idx, single_description, missing_field])
+                                print(f"{Fore.YELLOW}Entry added to invalid_entries.csv for manual review{Style.RESET_ALL}")
 
                 except json.JSONDecodeError as e:
                     print(f"JSON Parsing Error: {e}")
