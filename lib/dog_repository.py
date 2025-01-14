@@ -1,5 +1,6 @@
 from lib.dog import Dog
 import datetime
+from colorama import init, Fore, Style
 
 class DogRepository:
     # Initialize with a database connection
