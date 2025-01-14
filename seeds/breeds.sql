@@ -7,12 +7,6 @@ CREATE TABLE breeds (
 );
 
 INSERT INTO breeds (breed_name, count) VALUES ('Affenpinscher', 0);
-INSERT INTO breeds (breed_name, count) VALUES ('Affenpinscher', 0);
-INSERT INTO breeds (breed_name, count) VALUES ('Affenpinscher', 0);
-INSERT INTO breeds (breed_name, count) VALUES ('Affenpinscher', 0);
-INSERT INTO breeds (breed_name, count) VALUES ('Affenpinscher', 0);
-INSERT INTO breeds (breed_name, count) VALUES ('Affenpinscher', 0);
-INSERT INTO breeds (breed_name, count) VALUES ('Affenpinscher', 0);
 INSERT INTO breeds (breed_name, count) VALUES ('Afghan Hound', 0);
 INSERT INTO breeds (breed_name, count) VALUES ('Africanis', 0);
 INSERT INTO breeds (breed_name, count) VALUES ('Aidi', 0);

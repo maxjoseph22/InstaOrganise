@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 import os
 from openai import OpenAI
 from lib.dog_repository import DogRepository
+from lib.breed_repository import BreedRepository
 from lib.dog import Dog
 import json
 from lib.database_connection import DatabaseConnection
@@ -44,7 +45,8 @@ def is_valid_dog_entry(dog_data):
 
 def extract_and_save_dog_data(description):
     dog_repository = DogRepository(connection)
-    print("Welcome to The Dogist!\nWhat would you like to do? \n1 - Add a new dog \n2 - View rankings by breed \n3 - Viewing rankings by name \n4 - Search by breed \n5 - Search by name \n6 - Import dogs by CSV file")
+    breed_repository = BreedRepository(connection)
+    print("Welcome to The Dogist!\nWhat would you like to do? \n1 - Add a new dog \n2 - View rankings by breed \n3 - Viewing rankings by name \n4 - Search by breed \n5 - Search by name \n6 - View all breeds \n7 - Import dogs by CSV file \n8 - Add to breed count")
     selection = input()
     if selection == str(1):
         description = input('Please enter a brief description of the dog here: \n')
@@ -104,6 +106,9 @@ def extract_and_save_dog_data(description):
         return dog_repository.find_by_name(name)
     
     elif selection == str(6):
+        return "\n".join(breed_repository.get_breed_alphabetically())
+
+    elif selection == str(7):
         print("Enter the path to the CSV file")
         seed_file_path = input()
         print("Processing file...")
@@ -206,8 +211,10 @@ def extract_and_save_dog_data(description):
                                 print(f"{comments} comments")
                                 print(link_to_post)
 
+                                breed_repository.find_by_breed_and_add_to_count(breed)
                                 dog_repository.create(Dog(None, name, breed, age, purebreed, mix, sex, location, personality, likes, comments, link_to_post, photo))
                                 print(f"{Fore.GREEN}New dog added successfully!{Style.RESET_ALL}")
+                                print(breed_repository.find_by_breed_and_add_to_count(breed))
 
                             else:
                                 print(f"{Fore.RED}Invalid dog entry in row {idx}. Missing or invalid {missing_field}{Style.RESET_ALL}")
@@ -232,6 +239,11 @@ def extract_and_save_dog_data(description):
                     print(f"API Error: {e}")
     
         return f"{Style.BRIGHT}{Fore.GREEN}Processing complete{Style.RESET_ALL}"
+    
+    elif selection == str(8):
+        breed = input()
+        return breed_repository.find_by_breed_and_add_to_count(breed)
+
 
 # Example usage
 if __name__ == "__main__":
