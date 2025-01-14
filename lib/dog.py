@@ -29,6 +29,9 @@ class Dog:
         self.link_to_post = link_to_post
         self.photo = photo
 
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__
+
     def __repr__(self):
         return (
             f"<Dog(id={self.id}, name='{self.name}', breed='{self.breed}', "

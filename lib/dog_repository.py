@@ -52,7 +52,7 @@ class DogRepository:
     
     # Find dogs by name
     def find_by_name(self, name):
-        rows = self._connection.execute('SELECT * FROM dogs WHERE name = %s', [name])
+        rows = self._connection.execute('SELECT * FROM dogs WHERE name LIKE %s', [f'%{name}%'])
         dogs = []
         for row in rows:
             item = Dog(
@@ -61,11 +61,32 @@ class DogRepository:
                 row["likes"], row["comments"], row["link_to_post"], row["photo"]
             )
             dogs.append(item)
-        return dogs
+        
+        readable_dogs = "\n\n".join(
+        f"""
+        ID: {dog.id}
+        Name: {dog.name}
+        Breed: {dog.breed}
+        Purebred: {"Yes" if dog.purebreed else "No"}
+        Mix: {dog.mix}
+        Age: {dog.age}
+        Sex: {dog.sex}
+        Location: {dog.location}
+        Personality: {dog.personality}
+        Likes: {dog.likes}
+        Comments: {dog.comments}
+        Link to Post: {dog.link_to_post}
+        Photo URL: {dog.photo}
+        """
+        for dog in dogs
+    )
+
+        return readable_dogs
+        
         
     # Find dogs by breed
     def find_by_breed(self, breed):
-        rows = self._connection.execute('SELECT * FROM dogs WHERE breed = %s', [breed])
+        rows = self._connection.execute('SELECT * FROM dogs WHERE breed LIKE %s', [f'%{breed}%'])
         dogs = []
         for row in rows:
             item = Dog(
@@ -74,11 +95,31 @@ class DogRepository:
                 row["likes"], row["comments"], row["link_to_post"], row["photo"]
             )
             dogs.append(item)
-        return dogs
+        
+        readable_dogs = "\n\n".join(
+        f"""
+        ID: {dog.id}
+        Name: {dog.name}
+        Breed: {dog.breed}
+        Purebred: {"Yes" if dog.purebreed else "No"}
+        Mix: {dog.mix}
+        Age: {dog.age}
+        Sex: {dog.sex}
+        Location: {dog.location}
+        Personality: {dog.personality}
+        Likes: {dog.likes}
+        Comments: {dog.comments}
+        Link to Post: {dog.link_to_post}
+        Photo URL: {dog.photo}
+        """
+        for dog in dogs
+    )
+
+        return readable_dogs
     
     # Find dogs by age
     def find_by_age(self, age):
-        rows = self._connection.execute('SELECT * FROM dogs WHERE age = %s', [age])
+        rows = self._connection.execute('SELECT * FROM dogs WHERE age LIKE %s', [f'%{age}%'])
         dogs = []
         for row in rows:
             item = Dog(
@@ -87,7 +128,27 @@ class DogRepository:
                 row["likes"], row["comments"], row["link_to_post"], row["photo"]
             )
             dogs.append(item)
-        return dogs
+        
+        readable_dogs = "\n\n".join(
+        f"""
+        ID: {dog.id}
+        Name: {dog.name}
+        Breed: {dog.breed}
+        Purebred: {"Yes" if dog.purebreed else "No"}
+        Mix: {dog.mix}
+        Age: {dog.age}
+        Sex: {dog.sex}
+        Location: {dog.location}
+        Personality: {dog.personality}
+        Likes: {dog.likes}
+        Comments: {dog.comments}
+        Link to Post: {dog.link_to_post}
+        Photo URL: {dog.photo}
+        """
+        for dog in dogs
+    )
+
+        return readable_dogs
     
     # Create a new dog entry
     def create(self, dog):
