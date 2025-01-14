@@ -18,4 +18,3 @@ CREATE TABLE dogs (
 
 );
 
-INSERT INTO dogs (name, breed, purebreed, mix, age, sex, location, personality, likes, comments, link_to_post, photo) VALUES ('Benny', 'Poodle', true, false, 5, 'Boy', 'London, UK', 'Likes to chew sticks', 1000, 200, 'www.instagram.com/ksdf9sfj', NULL);
