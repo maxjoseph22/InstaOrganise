@@ -169,7 +169,7 @@ def extract_and_save_dog_data(description):
                         {"role": "system", "content": "You are a helpful assistant that extracts dog information from text descriptions."},
                         {"role": "user", "content": prompt}
                     ],
-                    max_tokens=350,
+                    max_tokens=800,
                     temperature=0.5
                 )   
 
