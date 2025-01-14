@@ -56,13 +56,14 @@ class BreedRepository:
     def find_by_breed_and_add_to_count(self, breed_name):
         rows = self._connection.execute('SELECT * FROM breeds WHERE breed_name = %s', [breed_name])
         if not rows:  # Handle case where no rows are returned
-            return "Unsuccessful, breed not found"
+            self._connection.execute('INSERT INTO mixed_breeds (breed_name, count) VALUES (%s, 1)', [breed_name])
+            return f"{Fore.RED}Unsuccessful, breed not found. Added to mixed breeds table.{Style.RESET_ALL}"
         else:
             self._connection.execute(
         'UPDATE breeds SET count = count + 1 WHERE breed_name = %s', 
         [breed_name]
         )
-            return "Breed count successfully updated"
+            return f"{Fore.GREEN}Breed count successfully updated{Style.RESET_ALL}"
     
     # Delete a breed entry
     def delete(self, id):
