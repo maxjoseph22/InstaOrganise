@@ -211,7 +211,6 @@ def extract_and_save_dog_data(description):
                                 print(f"{comments} comments")
                                 print(link_to_post)
 
-                                breed_repository.find_by_breed_and_add_to_count(breed)
                                 dog_repository.create(Dog(None, name, breed, age, purebreed, mix, sex, location, personality, likes, comments, link_to_post, photo))
                                 print(f"{Fore.GREEN}New dog added successfully!{Style.RESET_ALL}")
                                 print(breed_repository.find_by_breed_and_add_to_count(breed))

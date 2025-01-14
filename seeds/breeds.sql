@@ -342,6 +342,7 @@ INSERT INTO breeds (breed_name, count) VALUES ('Miniature Bull Terrier', 0);
 INSERT INTO breeds (breed_name, count) VALUES ('Miniature Fox Terrier', 0);
 INSERT INTO breeds (breed_name, count) VALUES ('Miniature Pinscher', 0);
 INSERT INTO breeds (breed_name, count) VALUES ('Miniature Schnauzer', 0);
+INSERT INTO breeds (breed_name, count) VALUES ('Mix', 0);
 INSERT INTO breeds (breed_name, count) VALUES ('Molossus of Epirus', 0);
 INSERT INTO breeds (breed_name, count) VALUES ('Mongrel', 0);
 INSERT INTO breeds (breed_name, count) VALUES ('Montenegrin Mountain Hound', 0);
