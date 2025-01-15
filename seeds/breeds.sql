@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS dogs;
 DROP TABLE IF EXISTS breeds;
 
 CREATE TABLE breeds (

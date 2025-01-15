@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS dogs;
 DROP TABLE IF EXISTS cross_breeds;
 
 CREATE TABLE cross_breeds (
