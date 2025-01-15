@@ -155,35 +155,58 @@ class DogRepository:
     
     # Create a new dog entry
     def create(self, dog):
-        # First, get the breed_id
+        # First try to find the breed in the purebred table
         breed_rows = self._connection.execute(
-        'SELECT id FROM breeds WHERE breed_name = %s',
-        [dog.breed]
+            'SELECT id FROM breeds WHERE breed_name = %s',
+            [dog.breed]
         )
-    
-        # If no matching breed was found, raise an error
-        if len(breed_rows) == 0:
-            raise ValueError(f"Breed '{dog.breed}' not found in breeds table")
-    
-        breed_id = breed_rows[0]["id"]
 
+        # If found in purebred table, use that ID and set purebreed=True
+        if len(breed_rows) > 0:
+            breed_id = breed_rows[0]["id"]
+            rows = self._connection.execute(
+                '''
+                INSERT INTO dogs (
+                    name, breed, age, sex, location, personality, 
+                    likes, comments, link_to_post, photo, breed_id,
+                    purebreed, mix
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                RETURNING id
+                ''', 
+                [
+                    dog.name, dog.breed, int(dog.age), dog.sex,
+                    dog.location, dog.personality, dog.likes, dog.comments,
+                    dog.link_to_post, dog.photo, breed_id, True, False
+                ]
+            )
+        # If not found in purebred table, check cross breeds table
+        else:
+            cross_breed_rows = self._connection.execute(
+                'SELECT id FROM cross_breeds WHERE breed_name = %s',
+                [dog.breed]
+            )
 
+            if len(cross_breed_rows) == 0:
+                raise ValueError(f"Breed '{dog.breed}' not found in either breeds or cross breeds tables")
 
-        rows = self._connection.execute(
-            '''
-            INSERT INTO dogs (
-                name, breed, purebreed, mix, age, sex, location, personality, 
-                likes, comments, link_to_post, photo, breed_id
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            RETURNING id
-            ''', 
-            [
-                dog.name, dog.breed, bool(dog.purebreed), bool(dog.mix), int(dog.age), dog.sex,
-                dog.location, dog.personality, dog.likes, dog.comments,
-                dog.link_to_post, dog.photo, breed_id
-            ]
-        )
-        return rows[0]["id"]  # Return the generated ID
+            cross_breed_id = cross_breed_rows[0]["id"]
+            rows = self._connection.execute(
+                '''
+                INSERT INTO dogs (
+                    name, breed, age, sex, location, personality, 
+                    likes, comments, link_to_post, photo, cross_breed_id,
+                    purebreed, mix
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                RETURNING id
+                ''', 
+                [
+                    dog.name, dog.breed, int(dog.age), dog.sex,
+                    dog.location, dog.personality, dog.likes, dog.comments,
+                    dog.link_to_post, dog.photo, cross_breed_id, False, True
+                ]
+            )
+
+        return rows[0]["id"]
     
     # Delete a dog entry
     def delete(self, id):

@@ -46,7 +46,7 @@ def is_valid_dog_entry(dog_data):
 def extract_and_save_dog_data(description):
     dog_repository = DogRepository(connection)
     breed_repository = BreedRepository(connection)
-    print("Welcome to The Dogist!\nWhat would you like to do? \n1 - Add a new dog \n2 - View rankings by breed \n3 - Viewing rankings by name \n4 - Search by breed \n5 - Search by name \n6 - View all breeds \n7 - Import dogs by CSV file \n8 - Add to breed count")
+    print("Welcome to The Dogist!\nWhat would you like to do? \n1 - Add a new dog \n2 - View rankings by breed \n3 - Viewing rankings by name \n4 - Search by breed \n5 - Search by name \n6 - View all breeds \n7 - Import dogs by CSV file \n8 - Add to breed count \n9 - View never featured breeds")
     selection = input()
     if selection == str(1):
         description = input('Please enter a brief description of the dog here: \n')
@@ -242,6 +242,9 @@ def extract_and_save_dog_data(description):
     elif selection == str(8):
         breed = input()
         return breed_repository.find_by_breed_and_add_to_count(breed)
+    
+    elif selection == str(9):
+        return breed_repository.all_zeros()
 
 
 # Example usage

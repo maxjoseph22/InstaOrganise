@@ -54,16 +54,47 @@ class BreedRepository:
     
     # Find breed and add to count
     def find_by_breed_and_add_to_count(self, breed_name):
+        cross_breed_rows = self._connection.execute(
+        'SELECT * FROM cross_breeds WHERE breed_name = %s', 
+        [breed_name]
+        )
+
+        if len(cross_breed_rows) > 0:  # If found in cross_breeds
+            self._connection.execute(
+                'UPDATE cross_breeds SET count = count + 1 WHERE breed_name = %s', 
+                [breed_name]
+            )
+            return f"{Fore.GREEN}Cross breed count successfully updated{Style.RESET_ALL}"
+
         rows = self._connection.execute('SELECT * FROM breeds WHERE breed_name = %s', [breed_name])
         if not rows:  # Handle case where no rows are returned
             self._connection.execute('INSERT INTO cross_breeds (breed_name, count) VALUES (%s, 1)', [breed_name])
-            return f"{Fore.RED}Unsuccessful, breed not found. Added to cross breeds table.{Style.RESET_ALL}"
+            return f"{Fore.YELLOW}Breed not found. Added to cross breeds table.{Style.RESET_ALL}"
         else:
             self._connection.execute(
         'UPDATE breeds SET count = count + 1 WHERE breed_name = %s', 
         [breed_name]
         )
             return f"{Fore.GREEN}Breed count successfully updated{Style.RESET_ALL}"
+
+    # Retrieve all breeds with zero count i.e. never seen
+    def all_zeros(self):
+        rows = self._connection.execute('SELECT * FROM breeds WHERE count = 0')
+        readable_breeds = []
+        for row in rows:
+            item = Breed(
+                row["id"], row["breed_name"], row["count"],
+            )
+            readable_breeds.append(item)
+        
+        readable_breeds = "".join(
+        f"""
+        Breed name: {breed.breed_name}
+        Count: {breed.count}
+        """
+        for breed in readable_breeds
+    )
+        return readable_breeds
     
     # Delete a breed entry
     def delete(self, id):
