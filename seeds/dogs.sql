@@ -13,8 +13,10 @@ CREATE TABLE dogs (
     likes int,
     comments int,
     link_to_post VARCHAR(255),
-    photo VARCHAR(255) DEFAULT NULL
-
-
+    photo VARCHAR(255) DEFAULT NULL,
+    breed_id INT,
+    constraint fk_breed foreign key(breed_id)
+    references breeds(id)
+    on delete cascade
 );
 

@@ -13,7 +13,8 @@ class Dog:
         likes,
         comments,
         link_to_post,
-        photo=None  # Default to None for optional fields
+        photo=None,
+        breed_id=None,
     ):
         self.id = id
         self.name = name
@@ -28,6 +29,7 @@ class Dog:
         self.comments = comments
         self.link_to_post = link_to_post
         self.photo = photo
+        self.breed_id = breed_id
 
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
@@ -38,5 +40,6 @@ class Dog:
             f"purebreed={self.purebreed}, mix={self.mix}, age={self.age}, "
             f"sex='{self.sex}', location='{self.location}', "
             f"personality='{self.personality}', likes={self.likes}, "
-            f"comments={self.comments}, link_to_post='{self.link_to_post}', photo='{self.photo}')>"
+            f"comments={self.comments}, link_to_post='{self.link_to_post}', "
+            f"photo='{self.photo}', breed_id={self.breed_id})>"
         )
