@@ -16,7 +16,7 @@ class DogRepository:
                 row["id"], row["name"], row["breed"], row["purebreed"],
                 row["mix"], row["age"], row["sex"], row["location"],
                 row["personality"], row["likes"], row["comments"],
-                row["link_to_post"], row["photo"]
+                row["link_to_post"], row["photo"], row["breed_id"]
             )
             dogs.append(item)
         return dogs
@@ -48,7 +48,7 @@ class DogRepository:
         return Dog(
             row["id"], row["name"], row["breed"], row["purebreed"], row["mix"],
             row["age"], row["sex"], row["location"], row["personality"],
-            row["likes"], row["comments"], row["link_to_post"], row["photo"]
+            row["likes"], row["comments"], row["link_to_post"], row["photo"], row["breed_id"]
         )
     
     # Find dogs by name
@@ -59,7 +59,7 @@ class DogRepository:
             item = Dog(
                 row["id"], row["name"], row["breed"], row["purebreed"], row["mix"],
                 row["age"], row["sex"], row["location"], row["personality"],
-                row["likes"], row["comments"], row["link_to_post"], row["photo"]
+                row["likes"], row["comments"], row["link_to_post"], row["photo"], row["breed_id"]
             )
             dogs.append(item)
         
@@ -78,6 +78,7 @@ class DogRepository:
         Comments: {dog.comments}
         Link to Post: {dog.link_to_post}
         Photo URL: {dog.photo}
+        Breed ID: {dog.breed_id}
         """
         for dog in dogs
     )
@@ -93,7 +94,7 @@ class DogRepository:
             item = Dog(
                 row["id"], row["name"], row["breed"], row["purebreed"], row["mix"],
                 row["age"], row["sex"], row["location"], row["personality"],
-                row["likes"], row["comments"], row["link_to_post"], row["photo"]
+                row["likes"], row["comments"], row["link_to_post"], row["photo"], row["breed_id"]
             )
             dogs.append(item)
         
@@ -112,10 +113,10 @@ class DogRepository:
         Comments: {dog.comments}
         Link to Post: {dog.link_to_post}
         Photo URL: {dog.photo}
+        Breed ID: {dog.breed_id}
         """
         for dog in dogs
     )
-
         return readable_dogs
     
     # Find dogs by age
@@ -126,7 +127,7 @@ class DogRepository:
             item = Dog(
                 row["id"], row["name"], row["breed"], row["purebreed"], row["mix"],
                 row["age"], row["sex"], row["location"], row["personality"],
-                row["likes"], row["comments"], row["link_to_post"], row["photo"]
+                row["likes"], row["comments"], row["link_to_post"], row["photo"], row["breed_id"]
             )
             dogs.append(item)
         
@@ -145,6 +146,7 @@ class DogRepository:
         Comments: {dog.comments}
         Link to Post: {dog.link_to_post}
         Photo URL: {dog.photo}
+        Breed ID: {dog.breed_id}
         """
         for dog in dogs
     )
@@ -153,18 +155,32 @@ class DogRepository:
     
     # Create a new dog entry
     def create(self, dog):
+        # First, get the breed_id
+        breed_rows = self._connection.execute(
+        'SELECT id FROM breeds WHERE breed_name = %s',
+        [dog.breed]
+        )
+    
+        # If no matching breed was found, raise an error
+        if len(breed_rows) == 0:
+            raise ValueError(f"Breed '{dog.breed}' not found in breeds table")
+    
+        breed_id = breed_rows[0]["id"]
+
+
+
         rows = self._connection.execute(
             '''
             INSERT INTO dogs (
                 name, breed, purebreed, mix, age, sex, location, personality, 
-                likes, comments, link_to_post, photo
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                likes, comments, link_to_post, photo, breed_id
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING id
             ''', 
             [
                 dog.name, dog.breed, bool(dog.purebreed), bool(dog.mix), int(dog.age), dog.sex,
                 dog.location, dog.personality, dog.likes, dog.comments,
-                dog.link_to_post, dog.photo
+                dog.link_to_post, dog.photo, breed_id
             ]
         )
         return rows[0]["id"]  # Return the generated ID
