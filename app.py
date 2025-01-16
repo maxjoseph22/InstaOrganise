@@ -163,6 +163,12 @@ def extract_and_save_dog_data(description):
                     - Correct spelling errors
                     - Use null for unknown age or breed
                     - Set photo to null
+                    - Return Pit Bull as Pitbull (NO space).
+                    Return English Bulldog as just Bulldog.
+                    Return Standard Poodle as just Poodle.
+                    Return Great Pyrenees as Pyrenean Mountain Dog.
+                    Return Wheaten Terrier as Soft-coated Wheaten Terrier.
+
 
                     Description: "{single_description}"
                     """
@@ -246,7 +252,6 @@ def extract_and_save_dog_data(description):
     
     elif selection == str(9):
         return breed_repository.all_zeros()
-
 
 # Example usage
 if __name__ == "__main__":
