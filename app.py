@@ -151,6 +151,8 @@ def extract_and_save_dog_data(description):
                     }}
 
                     Rules:
+                    - Age will usually be presented in parentheses towards the start of the description with an integer followed by y/o (for years old) or m/o (for months old).
+                    For an age less than 1 year old (e.g., 6 months), return the age as 0.5 years.
                     - Return ONLY the JSON object with no decorators or markdown
                     - Output "Breed" as "Mix" if no other breed is mentioned in the description
                     - Purebreed is true if words 'mix' or 'mixed' are absent
@@ -159,7 +161,6 @@ def extract_and_save_dog_data(description):
                     - Capitalize first letter of name and breed
                     - Convert breed shorthand (e.g., 'lab' to 'Labrador')
                     - Correct spelling errors
-                    - For 'almost X years', use X-1 as the age
                     - Use null for unknown age or breed
                     - Set photo to null
 
