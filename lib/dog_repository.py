@@ -167,16 +167,15 @@ class DogRepository:
             rows = self._connection.execute(
                 '''
                 INSERT INTO dogs (
-                    name, breed, age, sex, location, personality, 
-                    likes, comments, link_to_post, photo, breed_id,
-                    purebreed, mix
+                    name, breed, purebreed, mix, age, sex, location, personality, 
+                    likes, comments, link_to_post, photo, breed_id
                 ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 RETURNING id
                 ''', 
                 [
-                    dog.name, dog.breed, int(dog.age), dog.sex,
+                    dog.name, dog.breed, True, False, dog.age, dog.sex,
                     dog.location, dog.personality, dog.likes, dog.comments,
-                    dog.link_to_post, dog.photo, breed_id, True, False
+                    dog.link_to_post, dog.photo, breed_id
                 ]
             )
         # If not found in purebred table, check cross breeds table
@@ -193,16 +192,15 @@ class DogRepository:
             rows = self._connection.execute(
                 '''
                 INSERT INTO dogs (
-                    name, breed, age, sex, location, personality, 
-                    likes, comments, link_to_post, photo, cross_breed_id,
-                    purebreed, mix
+                    name, breed, purebreed, mix, age, sex, location, personality, 
+                    likes, comments, link_to_post, photo, cross_breed_id
                 ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 RETURNING id
                 ''', 
                 [
-                    dog.name, dog.breed, int(dog.age), dog.sex,
+                    dog.name, dog.breed, False, True, dog.age, dog.sex,
                     dog.location, dog.personality, dog.likes, dog.comments,
-                    dog.link_to_post, dog.photo, cross_breed_id, False, True
+                    dog.link_to_post, dog.photo, cross_breed_id
                 ]
             )
 

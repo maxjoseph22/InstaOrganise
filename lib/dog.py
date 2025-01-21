@@ -15,6 +15,7 @@ class Dog:
         link_to_post,
         photo=None,
         breed_id=None,
+        cross_breed_id=None,
     ):
         self.id = id
         self.name = name
@@ -30,6 +31,7 @@ class Dog:
         self.link_to_post = link_to_post
         self.photo = photo
         self.breed_id = breed_id
+        self.cross_breed_id = cross_breed_id
 
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
@@ -41,5 +43,5 @@ class Dog:
             f"sex='{self.sex}', location='{self.location}', "
             f"personality='{self.personality}', likes={self.likes}, "
             f"comments={self.comments}, link_to_post='{self.link_to_post}', "
-            f"photo='{self.photo}', breed_id={self.breed_id})>"
+            f"photo='{self.photo}', breed_id={self.breed_id}), cross_breed_id={self.cross_breed_id}>"
         )
