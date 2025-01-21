@@ -163,7 +163,7 @@ def extract_and_save_dog_data(description):
                     - Correct spelling errors
                     - Use null for unknown age or breed
                     - Set photo to null
-                    - Return Pit Bull as Pitbull (NO space).
+                    - Return Pit Bull as American Pit Bull Terrier.
                     Return English Bulldog as just Bulldog.
                     Return Standard Poodle as just Poodle.
                     Return Great Pyrenees as Pyrenean Mountain Dog.
