@@ -32,7 +32,7 @@ def is_valid_dog_entry(dog_data):
         "Comments": (int, float),
         "Link_to_post": str
     }
-    
+
     for field, expected_type in required_fields.items():
         value = dog_data.get(field)
         # Check if value is None, "None", empty string, or not of expected type
@@ -112,21 +112,23 @@ def extract_and_save_dog_data(description):
         print("Enter the path to the CSV file")
         seed_file_path = input()
         print("Processing file...")
-    
+
         dogs_data = []
         with open(seed_file_path, mode='r', newline='', encoding='utf-8') as file:
             reader = csv.DictReader(file)  # Use DictReader if the file has headers
             for row in reader:
                 dogs_data.append(row)
-        descriptions = []
-        for row in dogs_data:
-            description_2 = row["Caption"]
-            descriptions.append(description_2)
-        
-        total_descriptions = len(descriptions)
-        
-        for idx, single_description in enumerate(descriptions, start=1):
+
+        total_entries = len(dogs_data)
+
+        for idx, row in enumerate(dogs_data, start=1):
             try:
+                # Get values directly from CSV columns
+                description = row["Caption"]
+                likes = row["Likes"]
+                comments = row["Comments"]
+                link_to_post = row["Link_to_post"]
+
                 prompt = f"""
                     Extract dog information from the description below and return ONLY a raw JSON object with no markdown formatting, no code blocks, and no additional text.
                     Multiple dogs should be returned in an array format. Even for a single dog, use the array format.
@@ -138,21 +140,17 @@ def extract_and_save_dog_data(description):
                                 "Breed": "Dog's breed",
                                 "Age": age_number,
                                 "Purebreed": true or false,
-                                "Mix": true or fale,
+                                "Mix": true or false,
                                 "Sex": "Boy" or "Girl",
                                 "Location": "Dog's location",
                                 "Personality": "Dog's personality traits / quirks",
-                                "Likes": likes_number,
-                                "Comments": comments_number,
-                                "Link_to_post": "URL link to instagram post",
                                 "Photo": null
                             }}
                         ]
                     }}
 
                     Rules:
-                    - Age will usually be presented in parentheses towards the start of the description with an integer followed by y/o (for years old) or m/o (for months old).
-                    For an age less than 1 year old (e.g., 6 months), return the age as 0.5 years.
+                    - The age is usually given in this format: (6 y/o). Return this as 6. If it is given as (6.5 y/o) then round DOWN i.e. to 6.  If the age is unknown, return null. If the age is given in (m/o or w/o) format, return 0.
                     - Return ONLY the JSON object with no decorators or markdown
                     - Output "Breed" as "Mix" if no other breed is mentioned in the description
                     - Purebreed is true if words 'mix' or 'mixed' are absent
@@ -163,20 +161,13 @@ def extract_and_save_dog_data(description):
                     - Correct spelling errors
                     - Use null for unknown age or breed
                     - Set photo to null
-                    - Return Pit Bull as American Pit Bull Terrier.
-                    Return English Bulldog as just Bulldog.
-                    Return Standard Poodle as just Poodle.
-                    Return Great Pyrenees as Pyrenean Mountain Dog.
-                    Return Wheaten Terrier as Soft-coated Wheaten Terrier.
 
-
-                    Description: "{single_description}"
+                    Description: "{description}"
                     """
 
-            
                 # Call OpenAI's API with the correct parameters
                 response = client.chat.completions.create(
-                    model="gpt-3.5-turbo",  # Use the chat model instead of completions
+                    model="gpt-3.5-turbo",
                     messages=[
                         {"role": "system", "content": "You are a helpful assistant that extracts dog information from text descriptions."},
                         {"role": "user", "content": prompt}
@@ -190,44 +181,46 @@ def extract_and_save_dog_data(description):
                     content = json.loads(response.choices[0].message.content.strip())
                     # Process dogs array (will work for both single and multiple dogs)
                     for dog in content["dogs"]:
-                            name = dog["Name"]
-                            breed = dog["Breed"]
-                            age = dog["Age"]
-                            purebreed = dog["Purebreed"]
-                            mix = dog["Mix"]
-                            sex = dog["Sex"]
-                            location = dog["Location"]
-                            personality = dog["Personality"]
-                            likes = dog["Likes"]
-                            comments = dog["Comments"]
-                            link_to_post = dog["Link_to_post"]
-                            photo = dog["Photo"]
+                        # Add the CSV-provided fields to the dog dictionary
+                        dog["Likes"] = int(likes)
+                        dog["Comments"] = int(comments)
+                        dog["Link_to_post"] = link_to_post
 
-                            is_valid, missing_field = is_valid_dog_entry(dog)
+                        name = dog["Name"]
+                        breed = dog["Breed"]
+                        age = dog["Age"]
+                        purebreed = dog["Purebreed"]
+                        mix = dog["Mix"]
+                        sex = dog["Sex"]
+                        location = dog["Location"]
+                        personality = dog["Personality"]
+                        photo = dog["Photo"]
 
-                            if is_valid:
-                                print(f"Name: {name}")
-                                print(f"Breed: {breed}")
-                                print(f"Age: {age} years old")
-                                print(f"Purebreed: {purebreed}")
-                                print(f"Mix: {mix}")
-                                print(f"Sex: {sex}")
-                                print(f"Hometown: {location}")
-                                print(f"Personality / quirks: {personality}")
-                                print(f"{likes} likes")
-                                print(f"{comments} comments")
-                                print(link_to_post)
+                        is_valid, missing_field = is_valid_dog_entry(dog)
 
-                                print(breed_repository.find_by_breed_and_add_to_count(breed))
-                                dog_repository.create(Dog(None, name, breed, age, purebreed, mix, sex, location, personality, likes, comments, link_to_post, photo))
-                                print(f"{Fore.GREEN}New dog added successfully!{Style.RESET_ALL}")
+                        if is_valid:
+                            print(f"Name: {name}")
+                            print(f"Breed: {breed}")
+                            print(f"Age: {age} years old")
+                            print(f"Purebreed: {purebreed}")
+                            print(f"Mix: {mix}")
+                            print(f"Sex: {sex}")
+                            print(f"Hometown: {location}")
+                            print(f"Personality / quirks: {personality}")
+                            print(f"{likes} likes")
+                            print(f"{comments} comments")
+                            print(link_to_post)
 
-                            else:
-                                print(f"{Fore.RED}Invalid dog entry in row {idx}. Missing or invalid {missing_field}{Style.RESET_ALL}")
-                                with open('invalid_entries.csv', 'a', newline='') as file:
-                                    writer = csv.writer(file)
-                                    writer.writerow([idx, single_description, missing_field])
-                                print(f"{Fore.YELLOW}Entry added to invalid_entries.csv for manual review{Style.RESET_ALL}")
+                            print(breed_repository.find_by_breed_and_add_to_count(breed))
+                            dog_repository.create(Dog(None, name, breed, purebreed, mix, age, sex, location, personality, likes, comments, link_to_post, photo))
+                            print(f"{Fore.GREEN}New dog added successfully!{Style.RESET_ALL}")
+
+                        else:
+                            print(f"{Fore.RED}Invalid dog entry in row {idx}. Missing or invalid {missing_field}{Style.RESET_ALL}")
+                            with open('invalid_entries.csv', 'a', newline='') as file:
+                                writer = csv.writer(file)
+                                writer.writerow([idx, description, missing_field])
+                            print(f"{Fore.YELLOW}Entry added to invalid_entries.csv for manual review{Style.RESET_ALL}")
 
                 except json.JSONDecodeError as e:
                     print(f"JSON Parsing Error: {e}")
@@ -236,14 +229,14 @@ def extract_and_save_dog_data(description):
                     print(f"Missing Key Error: {e}")
                     print("Content structure:", content)
                 except Exception as e:
-                        print(f"Other Error: {e}")
-                
-                progress = (idx / total_descriptions) * 100
-                print(f"{Fore.YELLOW}Progress: {progress:.2f}% ({idx}/{total_descriptions}){Style.RESET_ALL}")
+                    print(f"Other Error: {e}")
+
+                progress = (idx / total_entries) * 100
+                print(f"{Fore.YELLOW}Progress: {progress:.2f}% ({idx}/{total_entries}){Style.RESET_ALL}")
 
             except Exception as e:
-                    print(f"API Error: {e}")
-    
+                print(f"API Error: {e}")
+
         return f"{Style.BRIGHT}{Fore.GREEN}Processing complete{Style.RESET_ALL}"
     
     elif selection == str(8):
