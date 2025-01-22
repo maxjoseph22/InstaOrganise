@@ -1,6 +1,7 @@
 from lib.dog import Dog
 import datetime
 from colorama import init, Fore, Style
+import random
 
 class DogRepository:
     # Initialize with a database connection
@@ -23,6 +24,16 @@ class DogRepository:
     
     # Retrieve breed popularity
     def get_breed_popularity(self):
+        rows = self._connection.execute(
+            'SELECT name, COUNT(*) AS count FROM dogs GROUP BY name ORDER BY likes DESC'
+        )
+        result = []
+        for row in rows:
+            result.append(f"{row['name']}, {row['count']}")
+        return result
+    
+    # Retrieve popularity by likes
+    def get_likes_popularity(self):
         rows = self._connection.execute(
             'SELECT breed, COUNT(*) AS count FROM dogs GROUP BY breed ORDER BY count DESC'
         )
@@ -206,6 +217,45 @@ class DogRepository:
 
         return rows[0]["id"]
     
+    # Get random dog
+    def random_dog(self):
+        range_list = self._connection.execute('SELECT COUNT(*) FROM dogs')
+        range_dict = range_list[0]
+        range_num = range_dict['count']
+        random_num = random.randrange(1, range_num)
+
+        rows = self._connection.execute('SELECT * FROM dogs WHERE id = %s', [random_num])
+        dogs = []
+        for row in rows:
+            item = Dog(
+                row["id"], row["name"], row["breed"], row["purebreed"], row["mix"],
+                row["age"], row["sex"], row["location"], row["personality"],
+                row["likes"], row["comments"], row["link_to_post"], row["photo"], row["breed_id"], row["cross_breed_id"]
+            )
+            dogs.append(item)
+        
+        readable_dogs = "\n\n".join(
+        f"""
+        ID: {dog.id}
+        Name: {dog.name}
+        Breed: {dog.breed}
+        Purebred: {"Yes" if dog.purebreed else "No"}
+        Mix: {dog.mix}
+        Age: {dog.age}
+        Sex: {dog.sex}
+        Location: {dog.location}
+        Personality: {dog.personality}
+        Likes: {dog.likes}
+        Comments: {dog.comments}
+        Link to Post: {dog.link_to_post}
+        Photo URL: {dog.photo}
+        Breed ID: {dog.breed_id}
+        Cross breed ID: {dog.cross_breed_id}
+        """
+        for dog in dogs
+    )
+        return readable_dogs
+
     # Delete a dog entry
     def delete(self, id):
         self._connection.execute('DELETE FROM dogs WHERE id = %s', [id])

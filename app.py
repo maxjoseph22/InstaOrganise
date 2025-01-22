@@ -245,6 +245,9 @@ def extract_and_save_dog_data(description):
     
     elif selection == str(9):
         return breed_repository.all_zeros()
+    
+    elif selection == str(10):
+        return dog_repository.random_dog()
 
 # Example usage
 if __name__ == "__main__":
