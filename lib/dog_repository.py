@@ -2,6 +2,9 @@ from lib.dog import Dog
 import datetime
 from colorama import init, Fore, Style
 import random
+import instaloader
+import csv
+from datetime import datetime
 
 class DogRepository:
     # Initialize with a database connection
@@ -25,11 +28,11 @@ class DogRepository:
     # Retrieve breed popularity
     def get_breed_popularity(self):
         rows = self._connection.execute(
-            'SELECT name, COUNT(*) AS count FROM dogs GROUP BY name ORDER BY likes DESC'
+            'SELECT breed, COUNT(*) AS count FROM dogs GROUP BY breed ORDER BY count DESC'
         )
         result = []
         for row in rows:
-            result.append(f"{row['name']}, {row['count']}")
+            result.append(f"{row['breed']}, {row['count']}")
         return result
     
     # Retrieve popularity by likes
@@ -260,3 +263,52 @@ class DogRepository:
     def delete(self, id):
         self._connection.execute('DELETE FROM dogs WHERE id = %s', [id])
         return None
+    
+    # def scrape_recent_posts(self, date):
+    #     # Create an instance of Instaloader
+    #     L = instaloader.Instaloader()
+
+    #     # Specify the profile and cutoff date
+    #     profile_name = "thedogist"
+    #     cutoff_date = date  # Year, Month, Day
+
+    #     # Prepare data storage
+    #     posts_data = []
+
+    #     try:
+    #         # Get profile
+    #         profile = instaloader.Profile.from_username(L.context, profile_name)
+
+    #         # Get posts
+    #         posts = profile.get_posts()
+
+    #         # Iterate through posts
+    #         for post in posts:
+    #             # Stop if we've reached posts older than our cutoff date
+    #             if post.date < cutoff_date:
+    #                 break
+
+    #             # Collect post data
+    #             post_data = {
+    #                 'caption': post.caption,
+    #                 'likes': post.likes,
+    #                 'comments': post.comments,
+    #                 'link_to_post': f"https://www.instagram.com/p/{post.shortcode}"
+    #             }
+    #             posts_data.append(post_data)
+    #             print(f"Processed post from {post.date}")
+
+    #         # Save to CSV
+    #         csv_filename = f"{profile_name}_posts.csv"
+    #         with open(csv_filename, 'w', newline='', encoding='utf-8') as file:
+    #             writer = csv.DictWriter(file, fieldnames=['caption', 'likes', 'comments', 'link_to_post'])
+    #             writer.writeheader()
+    #             writer.writerows(posts_data)
+
+    #         print(f"\nSaved {len(posts_data)} posts to {csv_filename}")
+
+    #     except instaloader.exceptions.ProfileNotExistsException:
+    #         print(f"Profile {profile_name} does not exist")
+    #     except Exception as e:
+    #         print(f"An error occurred: {e}")
+
