@@ -14,6 +14,7 @@ CREATE TABLE dogs (
     comments INT,
     link_to_post VARCHAR(255),
     photo VARCHAR(255) DEFAULT NULL,
+    video BOOLEAN,
     breed_id INT,
     CONSTRAINT fk_breed FOREIGN KEY (breed_id)
         REFERENCES breeds (id)

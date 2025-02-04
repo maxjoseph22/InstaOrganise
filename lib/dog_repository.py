@@ -20,7 +20,7 @@ class DogRepository:
                 row["id"], row["name"], row["breed"], row["purebreed"],
                 row["mix"], row["age"], row["sex"], row["location"],
                 row["personality"], row["likes"], row["comments"],
-                row["link_to_post"], row["photo"], row["breed_id"]
+                row["link_to_post"], row["video"], row["photo"], row["breed_id"]
             )
             dogs.append(item)
         return dogs
@@ -62,7 +62,7 @@ class DogRepository:
         return Dog(
             row["id"], row["name"], row["breed"], row["purebreed"], row["mix"],
             row["age"], row["sex"], row["location"], row["personality"],
-            row["likes"], row["comments"], row["link_to_post"], row["photo"], row["breed_id"]
+            row["likes"], row["comments"], row["link_to_post"], row["video"], row["photo"], row["breed_id"]
         )
     
     # Find dogs by name
@@ -73,7 +73,7 @@ class DogRepository:
             item = Dog(
                 row["id"], row["name"], row["breed"], row["purebreed"], row["mix"],
                 row["age"], row["sex"], row["location"], row["personality"],
-                row["likes"], row["comments"], row["link_to_post"], row["photo"], row["breed_id"]
+                row["likes"], row["comments"], row["link_to_post"], row["video"], row["photo"], row["breed_id"]
             )
             dogs.append(item)
         
@@ -91,6 +91,7 @@ class DogRepository:
         Likes: {dog.likes}
         Comments: {dog.comments}
         Link to Post: {dog.link_to_post}
+        Video: {dog.video}
         Photo URL: {dog.photo}
         Breed ID: {dog.breed_id}
         """
@@ -108,7 +109,7 @@ class DogRepository:
             item = Dog(
                 row["id"], row["name"], row["breed"], row["purebreed"], row["mix"],
                 row["age"], row["sex"], row["location"], row["personality"],
-                row["likes"], row["comments"], row["link_to_post"], row["photo"], row["breed_id"]
+                row["likes"], row["comments"], row["link_to_post"], row["video"], row["photo"], row["breed_id"]
             )
             dogs.append(item)
         
@@ -126,6 +127,7 @@ class DogRepository:
         Likes: {dog.likes}
         Comments: {dog.comments}
         Link to Post: {dog.link_to_post}
+        Video: {dog.video}
         Photo URL: {dog.photo}
         Breed ID: {dog.breed_id}
         """
@@ -141,7 +143,7 @@ class DogRepository:
             item = Dog(
                 row["id"], row["name"], row["breed"], row["purebreed"], row["mix"],
                 row["age"], row["sex"], row["location"], row["personality"],
-                row["likes"], row["comments"], row["link_to_post"], row["photo"], row["breed_id"]
+                row["likes"], row["comments"], row["link_to_post"], row["video"], row["photo"], row["breed_id"]
             )
             dogs.append(item)
         
@@ -159,6 +161,7 @@ class DogRepository:
         Likes: {dog.likes}
         Comments: {dog.comments}
         Link to Post: {dog.link_to_post}
+        Video: {dog.video}
         Photo URL: {dog.photo}
         Breed ID: {dog.breed_id}
         """
@@ -182,14 +185,14 @@ class DogRepository:
                 '''
                 INSERT INTO dogs (
                     name, breed, purebreed, mix, age, sex, location, personality, 
-                    likes, comments, link_to_post, photo, breed_id
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    likes, comments, link_to_post, video, photo, breed_id
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 RETURNING id
                 ''', 
                 [
                     dog.name, dog.breed, True, False, dog.age, dog.sex,
                     dog.location, dog.personality, dog.likes, dog.comments,
-                    dog.link_to_post, dog.photo, breed_id
+                    dog.link_to_post, dog.video, dog.photo, breed_id
                 ]
             )
         # If not found in purebred table, check cross breeds table
@@ -207,14 +210,14 @@ class DogRepository:
                 '''
                 INSERT INTO dogs (
                     name, breed, purebreed, mix, age, sex, location, personality, 
-                    likes, comments, link_to_post, photo, cross_breed_id
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    likes, comments, link_to_post, video, photo, cross_breed_id
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 RETURNING id
                 ''', 
                 [
                     dog.name, dog.breed, False, True, dog.age, dog.sex,
                     dog.location, dog.personality, dog.likes, dog.comments,
-                    dog.link_to_post, dog.photo, cross_breed_id
+                    dog.link_to_post, dog.video, dog.photo, cross_breed_id
                 ]
             )
 
@@ -233,7 +236,7 @@ class DogRepository:
             item = Dog(
                 row["id"], row["name"], row["breed"], row["purebreed"], row["mix"],
                 row["age"], row["sex"], row["location"], row["personality"],
-                row["likes"], row["comments"], row["link_to_post"], row["photo"], row["breed_id"], row["cross_breed_id"]
+                row["likes"], row["comments"], row["link_to_post"], row["video"], row["photo"], row["breed_id"], row["cross_breed_id"]
             )
             dogs.append(item)
         
@@ -251,6 +254,7 @@ class DogRepository:
         Likes: {dog.likes}
         Comments: {dog.comments}
         Link to Post: {dog.link_to_post}
+        Video: {dog.video}
         Photo URL: {dog.photo}
         Breed ID: {dog.breed_id}
         Cross breed ID: {dog.cross_breed_id}
