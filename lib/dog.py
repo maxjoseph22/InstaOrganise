@@ -13,6 +13,7 @@ class Dog:
         likes,
         comments,
         link_to_post,
+        video,
         photo=None,
         breed_id=None,
         cross_breed_id=None,
@@ -29,6 +30,7 @@ class Dog:
         self.likes = likes
         self.comments = comments
         self.link_to_post = link_to_post
+        self.video = video
         self.photo = photo
         self.breed_id = breed_id
         self.cross_breed_id = cross_breed_id
@@ -42,6 +44,6 @@ class Dog:
             f"purebreed={self.purebreed}, mix={self.mix}, age={self.age}, "
             f"sex='{self.sex}', location='{self.location}', "
             f"personality='{self.personality}', likes={self.likes}, "
-            f"comments={self.comments}, link_to_post='{self.link_to_post}', "
-            f"photo='{self.photo}', breed_id={self.breed_id}), cross_breed_id={self.cross_breed_id}>"
+            f"comments={self.comments}, link_to_post='{self.link_to_post}', " f"video='{self.video}', "
+            f"photo='{self.photo}',  breed_id={self.breed_id}), cross_breed_id={self.cross_breed_id}>"
         )
