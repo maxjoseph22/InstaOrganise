@@ -130,6 +130,7 @@ def extract_and_save_dog_data(description):
                 comments = row["Comments"]
                 link_to_post = row["Link_to_post"]
                 video = row["Video"]
+                date_posted = row["Date_posted"]
 
                 prompt = f"""
                     Extract dog information from the description below and return ONLY a raw JSON object with no markdown formatting, no code blocks, and no additional text.
@@ -188,6 +189,7 @@ def extract_and_save_dog_data(description):
                         dog["Comments"] = int(comments)
                         dog["Link_to_post"] = link_to_post
                         dog["Video"] = video
+                        dog["Date_posted"] = date_posted
 
                         name = dog["Name"]
                         breed = dog["Breed"]
@@ -214,10 +216,10 @@ def extract_and_save_dog_data(description):
                             print(f"{comments} comments")
                             print(link_to_post)
                             print(video)
-                            print(type(video))
+                            print(date_posted)
 
                             print(breed_repository.find_by_breed_and_add_to_count(breed))
-                            dog_repository.create(Dog(None, name, breed, purebreed, mix, age, sex, location, personality, likes, comments, link_to_post, bool(video), photo))
+                            dog_repository.create(Dog(None, name, breed, purebreed, mix, age, sex, location, personality, likes, comments, link_to_post, bool(video), date_posted, photo))
                             print(f"{Fore.GREEN}New dog added successfully!{Style.RESET_ALL}")
 
                         else:
