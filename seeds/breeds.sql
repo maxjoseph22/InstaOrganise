@@ -114,7 +114,7 @@ INSERT INTO breeds (breed_name, count) VALUES ('Bulgarian Hound', 0);
 INSERT INTO breeds (breed_name, count) VALUES ('Bulgarian Scenthound', 0);
 INSERT INTO breeds (breed_name, count) VALUES ('Bull Arab', 0);
 INSERT INTO breeds (breed_name, count) VALUES ('Bull Terrier', 0);
-INSERT INTO breeds (breed_name, count) VALUES ('Bulldog', 0);
+INSERT INTO breeds (breed_name, count) VALUES ('English Bulldog', 0);
 INSERT INTO breeds (breed_name, count) VALUES ('Bullmastiff', 0);
 INSERT INTO breeds (breed_name, count) VALUES ('Bully Kutta', 0);
 INSERT INTO breeds (breed_name, count) VALUES ('Burgos Pointer', 0);
