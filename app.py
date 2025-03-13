@@ -216,7 +216,7 @@ def extract_and_save_dog_data(description):
                             print(f"{comments} comments")
                             print(link_to_post)
                             print(video)
-                            print(date_posted)
+                            print(date_posted)  
 
                             print(breed_repository.find_by_breed_and_add_to_count(breed))
                             dog_repository.create(Dog(None, name, breed, purebreed, mix, age, sex, location, personality, likes, comments, link_to_post, bool(video), date_posted, photo))

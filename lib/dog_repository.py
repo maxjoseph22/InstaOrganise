@@ -48,7 +48,7 @@ class DogRepository:
     # Retrieve name popularity
     def get_name_popularity(self):
         rows = self._connection.execute(
-            'SELECT name, COUNT(*) AS count FROM dogs GROUP BY name ORDER BY count DESC'
+            'SELECT name, COUNT(*) AS count FROM dogs GROUP BY name ORDER BY count ASC'
         )
         result = []
         for row in rows:
