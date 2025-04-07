@@ -256,12 +256,12 @@ def extract_and_save_dog_data(description):
     elif selection == str(10):
         return dog_repository.random_dog()
     
-    # elif selection == str(11):
-    #     print("Please enter the date you wish to search to \nFormat: YYYY-MM-DD")
-    #     date_str = input()
-    #     date_format = "%Y-%m-%d"
-    #     date_obj = datetime.strptime(date_str, date_format)
-    #     return dog_repository.scrape_recent_posts(date_obj)
+    elif selection == str(11):
+        print("Please enter the date you wish to search to \nFormat: YYYY-MM-DD")
+        date_str = input()
+        date_format = "%Y-%m-%d"
+        date_obj = datetime.strptime(date_str, date_format)
+        return dog_repository.scrape_recent_posts(date_obj)
 
 # Example usage
 if __name__ == "__main__":
