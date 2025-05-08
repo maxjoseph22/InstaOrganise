@@ -38,16 +38,16 @@ def is_valid_dog_entry(dog_data):
         value = dog_data.get(field)
         # Check if value is None, "None", empty string, or not of expected type
         if value is None or value == "None" or value == "" or not isinstance(value, expected_type):
-            return False, field
+            return True, field
         if "Age" in dog_data and dog_data["Age"] is not None:
             if not isinstance(dog_data["Age"], (int, float)):
-                return False, "Age (invalid type)"
+                return True, "Age (invalid type)"
     return True, None
 
 def extract_and_save_dog_data(description):
     dog_repository = DogRepository(connection)
     breed_repository = BreedRepository(connection)
-    print("Welcome to The Dogist!\nWhat would you like to do? \n1 - Add a new dog \n2 - View rankings by breed \n3 - Viewing rankings by name \n4 - Search by breed \n5 - Search by name \n6 - View all breeds \n7 - Import dogs by CSV file \n8 - Add to breed count \n9 - View never featured breeds \n10 - View a random dog")
+    print("Welcome to The Dogist!\nWhat would you like to do? \n1 - Add a new dog \n2 - View rankings by breed \n3 - Viewing rankings by name \n4 - Search by breed \n5 - Search by name \n6 - View all breeds \n7 - Import dogs by CSV file \n8 - Add to breed count \n9 - View never featured breeds \n10 - View a random dog \n11 - Import invalid dogs by CSV file")
     selection = input()
     if selection == str(1):
         description = input('Please enter a brief description of the dog here: \n')
@@ -224,10 +224,10 @@ def extract_and_save_dog_data(description):
 
                         else:
                             print(f"{Fore.RED}Invalid dog entry in row {idx}. Missing or invalid {missing_field}{Style.RESET_ALL}")
-                            with open('invalid_entries.csv', 'a', newline='') as file:
+                            with open('new_invalid_entries.csv', 'a', newline='') as file:
                                 writer = csv.writer(file)
                                 writer.writerow([idx, description, missing_field])
-                            print(f"{Fore.YELLOW}Entry added to invalid_entries.csv for manual review{Style.RESET_ALL}")
+                            print(f"{Fore.YELLOW}Entry added to new_invalid_entries.csv for manual review{Style.RESET_ALL}")
 
                 except json.JSONDecodeError as e:
                     print(f"JSON Parsing Error: {e}")
@@ -262,6 +262,143 @@ def extract_and_save_dog_data(description):
     #     date_format = "%Y-%m-%d"
     #     date_obj = datetime.strptime(date_str, date_format)
     #     return dog_repository.scrape_recent_posts(date_obj)
+
+    elif selection == str(11):
+        print("Enter the path to the CSV file")
+        seed_file_path = input()
+        print("Processing file...")
+
+        dogs_data = []
+        with open(seed_file_path, mode='r', newline='', encoding='utf-8') as file:
+            reader = csv.DictReader(file)  # Use DictReader if the file has headers
+            for row in reader:
+                dogs_data.append(row)
+
+        total_entries = len(dogs_data)
+
+        for idx, row in enumerate(dogs_data, start=1):
+            try:
+                # Get values directly from CSV columns
+                description = row["Caption"]
+                likes = row["Likes"]
+                comments = row["Comments"]
+                link_to_post = row["Link_to_post"]
+                video = row["Video"]
+                date_posted = row["Date_posted"]
+
+                prompt = f"""
+                    Extract dog information from the description below and return ONLY a raw JSON object with no markdown formatting, no code blocks, and no additional text.
+                    Multiple dogs should be returned in an array format. Even for a single dog, use the array format.
+                    Required JSON structure:
+                    {{
+                        "dogs": [
+                            {{
+                                "Name": "Dog's name",
+                                "Breed": "Dog's breed",
+                                "Age": age_number,
+                                "Purebreed": true or false,
+                                "Mix": true or false,
+                                "Sex": "Boy" or "Girl",
+                                "Location": "Dog's location",
+                                "Personality": "Dog's personality traits / quirks",
+                                "Photo": null
+                            }}
+                        ]
+                    }}
+
+                    Rules:
+                    - The age is usually given in this format: (6 y/o). Return this as 6. If it is given as (6.5 y/o) then round DOWN i.e. to 6.  If the age is unknown, return null. If the age is given in (m/o or w/o) format, return 0.
+                    - Return ONLY the JSON object with no decorators or markdown
+                    - Output "Breed" as "Mix" if no other breed is mentioned in the description
+                    - Purebreed is true if words 'mix' or 'mixed' are absent
+                    - Mix is the inverse value of Purebreed
+                    - All boolean values must be lowercase (true/false)
+                    - Capitalize first letter of name and breed
+                    - Convert breed shorthand (e.g., 'lab' to 'Labrador')
+                    - Correct spelling errors
+                    - IMPORTANT: Record null if any of these data fields cannot be deduced from the caption: name, breed, age, purebreed, mix, sex, location, personality.
+                    - Set photo to null
+
+                    Description: "{description}"
+                    """
+
+                # Call OpenAI's API with the correct parameters
+                response = client.chat.completions.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "system", "content": "You are a helpful assistant that extracts dog information from text descriptions."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    max_tokens=800,
+                    temperature=0.5
+                )   
+
+                try:
+                    # Parse the JSON response
+                    content = json.loads(response.choices[0].message.content.strip())
+                    # Process dogs array (will work for both single and multiple dogs)
+                    for dog in content["dogs"]:
+                        # Add the CSV-provided fields to the dog dictionary
+                        dog["Likes"] = int(likes)
+                        dog["Comments"] = int(comments)
+                        dog["Link_to_post"] = link_to_post
+                        dog["Video"] = video
+                        dog["Date_posted"] = date_posted
+
+                        name = dog["Name"]
+                        breed = dog["Breed"]
+                        age = dog["Age"]
+                        purebreed = dog["Purebreed"]
+                        mix = dog["Mix"]
+                        sex = dog["Sex"]
+                        location = dog["Location"]
+                        personality = dog["Personality"]
+                        photo = dog["Photo"]
+
+                        is_valid, missing_field = is_valid_dog_entry(dog)
+
+                        if is_valid:
+                            print(f"Name: {name}")
+                            print(f"Breed: {breed}")
+                            print(f"Age: {age} years old")
+                            print(f"Purebreed: {purebreed}")
+                            print(f"Mix: {mix}")
+                            print(f"Sex: {sex}")
+                            print(f"Hometown: {location}")
+                            print(f"Personality / quirks: {personality}")
+                            print(f"{likes} likes")
+                            print(f"{comments} comments")
+                            print(link_to_post)
+                            print(video)
+                            print(date_posted)  
+
+                            print(breed_repository.find_by_breed_and_add_to_count(breed))
+                            dog_repository.create(Dog(None, name, breed, purebreed, mix, age, sex, location, personality, likes, comments, link_to_post, bool(video), date_posted, photo))
+                            print(f"{Fore.GREEN}New dog added successfully!{Style.RESET_ALL}")
+
+                        else:
+                            print(f"{Fore.RED}Invalid dog entry in row {idx}. Missing or invalid {missing_field}{Style.RESET_ALL}")
+                            with open('new_invalid_entries.csv', 'a', newline='') as file:
+                                writer = csv.writer(file)
+                                writer.writerow([idx, description, missing_field])
+                            print(f"{Fore.YELLOW}Entry added to new_invalid_entries.csv for manual review{Style.RESET_ALL}")
+
+                except json.JSONDecodeError as e:
+                    print(f"JSON Parsing Error: {e}")
+                    print("Response content:", response.choices[0].message.content.strip())
+                except KeyError as e:
+                    print(f"Missing Key Error: {e}")
+                    print("Content structure:", content)
+                except Exception as e:
+                    print(f"Other Error: {e}")
+
+                progress = (idx / total_entries) * 100
+                print(f"{Fore.YELLOW}Progress: {progress:.2f}% ({idx}/{total_entries}){Style.RESET_ALL}")
+
+            except Exception as e:
+                print(f"API Error: {e}")
+
+        return f"{Style.BRIGHT}{Fore.GREEN}Processing complete{Style.RESET_ALL}"
 
 # Example usage
 if __name__ == "__main__":
